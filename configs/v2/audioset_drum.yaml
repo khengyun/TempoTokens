@@ -29,11 +29,11 @@ extend_dataset: False
 # Caches the latents (Frames-Image -> VAE -> Latent) to a HDD or SDD.
 # The latents will be saved under your training folder, and loaded automatically for training.
 # This both saves memory and speeds up training and takes very little disk space.
-cache_latents: False
+cache_latents: True
 
 # If you have cached latents set to `True` and have a directory of cached latents,
 # you can skip the caching process and load previously saved ones.
-cached_latent_dir: null #/path/to/cached_latents
+cached_latent_dir: "./outputs/cached_latents" #/path/to/cached_latents
 
 # Train the text encoder. Leave at false to use LoRA only (Recommended).
 train_text_encoder: False
@@ -44,10 +44,10 @@ train_text_encoder: False
 # It is simply used as a mechanism for saving memory by keeping layers frozen and training the residual.
 
 # Use LoRA for the UNET model.
-use_unet_lora: False
+use_unet_lora: True
 
 # Use LoRA for the Text Encoder.
-use_text_lora: False
+use_text_lora: True
 
 # The modules to use for LoRA. Different from 'trainable_modules'.
 unet_lora_modules:
@@ -98,9 +98,10 @@ train_data:
   fallback_prompt: '<temp> <local1> <local2> <local3> <local4> <class>'
 
   # 'folder'
-  path: "path/to/dataset_folder"
+  # path: "path/to/dataset_folder"
+  path: "/mnt/d/datasets/AudioSet_Drums/AudioSet_Dataset/train"
 
-  dataset_name: 'audioset-drum'
+  dataset_name: 'audioset_drum'
 
   # 'json'
   json_path: 'path/to/train/json/'
@@ -159,7 +160,7 @@ extra_text_encoder_params: null
   #adam_weight_decay: 0.2
 
 # How many batches to train. Not to be confused with video frames.
-train_batch_size: 4
+train_batch_size: 2
 
 # Maximum number of train steps. Model is saved after training.
 max_train_steps: 20000
@@ -195,7 +196,7 @@ trainable_text_modules:
 seed: 64
 
 # Whether or not we want to use mixed precision with accelerate
-mixed_precision: "no"
+mixed_precision: "fp16"
 
 # This seems to be incompatible at the moment.
 use_8bit_adam: False

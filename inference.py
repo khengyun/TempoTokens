@@ -345,12 +345,13 @@ def diffuse(
 
 
 def get_audio_paths(df, testset='vggsound'):
-
-    path = f'path/to/testset/{testset}'
+    import pathlib
+# D:\datasets\AudioSet_Drums\AudioSet_Dataset
+    path = f'/mnt/d/datasets/AudioSet_Drums/AudioSet_Dataset/test'
     paths = []
 
-    videos = set([file_path[:-4] for file_path in os.listdir(f"{path}/video/")])
-    audios = set([file_path[:-4] for file_path in os.listdir(f"{path}/audio/")])
+    videos = set([file_path[:-4] for file_path in os.listdir(f"{path}/video")])
+    audios = set([file_path[:-4] for file_path in os.listdir(f"{path}/audio")])
     samples = videos & audios
 
     df['ytid'] = df['ytid'].astype('str')
@@ -389,6 +390,7 @@ def inference(
 
     with torch.autocast(device, dtype=torch.half):
         # prepare models
+        print(model, device, xformers, sdp, lora_path, lora_rank)
         pipe, temporal_token, local_windows, audio_token = initialize_pipeline(model, device, xformers, sdp, lora_path, lora_rank)
         temporal_token = temporal_token.half().cuda()
         for i in range(len(local_windows)):

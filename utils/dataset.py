@@ -79,25 +79,79 @@ def get_video_frames(vr, start_idx, sample_rate=1, max_frames=24):
 
     return frame_range_indices
 
+def preprocess_audio(audio, sample_rate, target_sample_rate=16000, target_length=16000):
+    """
+    Preprocess audio to ensure:
+    - Mono channel (1 channel).
+    - Resampled to the target sample rate.
+    - Padded or truncated to the target length.
+
+    Args:
+        audio (torch.Tensor): Audio tensor of shape [channels, samples].
+        sample_rate (int): Original sample rate of the audio.
+        target_sample_rate (int): Target sample rate (default 16kHz).
+        target_length (int): Target number of samples (default 16000).
+
+    Returns:
+        torch.Tensor: Preprocessed audio tensor of shape [1, target_length].
+    """
+    # Convert stereo to mono if necessary
+    if audio.size(0) > 1:
+        audio = audio.mean(dim=0, keepdim=True)
+
+    # Resample if the sample rate doesn't match the target
+    if sample_rate != target_sample_rate:
+        resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=target_sample_rate)
+        audio = resampler(audio)
+
+    # Trim or pad to the target length
+    if audio.size(1) > target_length:
+        audio = audio[:, :target_length]  # Trim if longer
+    else:
+        padding = target_length - audio.size(1)
+        audio = torch.nn.functional.pad(audio, (0, padding))  # Pad if shorter
+
+    return audio
+
 def process_video(vid_path, use_bucketing, w, h, get_frame_buckets, get_frame_batch):
+    """
+    Processes video and corresponding audio to extract relevant frames and audio segments.
+
+    Args:
+        vid_path (str): Path to the video file.
+        use_bucketing (bool): Whether to use bucketing for video resizing.
+        w (int): Target video width.
+        h (int): Target video height.
+        get_frame_buckets (func): Function to calculate bucket sizes.
+        get_frame_batch (func): Function to extract video frames.
+
+    Returns:
+        tuple: video frames (torch.Tensor), VideoReader object, preprocessed audio (torch.Tensor).
+    """
+    # Load video and frames
     if use_bucketing:
         vr = decord.VideoReader(vid_path)
         resize = get_frame_buckets(vr)
         video, idxs = get_frame_batch(vr, resize=resize)
-
     else:
         vr = decord.VideoReader(vid_path, width=w, height=h)
         video, idxs = get_frame_batch(vr)
 
+    # Load audio
     aud_path = vid_path.replace('video', 'audio').replace('mp4', 'wav')
     waveform, sample_rate = torchaudio.load(aud_path)
 
+    # Repeat waveform for longer sequences (if needed)
     waveform = torch.tile(waveform, (1, 10))
     audio = waveform[:, :sample_rate * 10]
 
-    start = int(sample_rate * (idxs[0])/30)
-    end = start + int(len(idxs)/24 * sample_rate)
+    # Extract segment based on video frame indices
+    start = int(sample_rate * (idxs[0]) / 30)
+    end = start + int(len(idxs) / 24 * sample_rate)
     audio = audio[:, start:end]
+
+    # Preprocess audio for the model
+    audio = preprocess_audio(audio, sample_rate)
 
     return video, vr, audio
 
@@ -498,7 +552,7 @@ class VideoFolderDataset(Dataset):
         path: str = "./data",
         fallback_prompt: str = "a video of <*>",
         use_bucketing: bool = False,
-        labels=['playing bass guitar'],
+        labels=['drum kit'],
         data_set='train',
         repeat=5,
         **kwargs
@@ -516,7 +570,24 @@ class VideoFolderDataset(Dataset):
         self.valid_videos = set()
 
         self.df = pd.read_csv(f'datasets/{kwargs["dataset_name"]}.csv')
+
+        # print("self.data_set: ", self.data_set)
+        # print("self.labels: ", self.labels)
+        # print("width: ", width)
+        # print("height: ", height)
+        # print("fps: ", fps)
+
+        
+        # print("================ csv ================")
+        # print(self.df.head())
+        # print("================ csv ================")
+
         self.df = self.df[self.df["set"] == self.data_set]
+
+        # print("================ csv2 ================")
+        # print(self.df.head())
+        # print("================ csv2 ================")
+
         if self.labels is not None:
             self.df = self.df[self.df["class"].isin(self.labels)]
 
@@ -534,9 +605,25 @@ class VideoFolderDataset(Dataset):
             class_counts = self.df['class'].value_counts()
             self.df = self.df[self.df['class'].isin(class_counts.index[class_counts >= 120])]
 
+
+        # print(os.listdir(f"{path}/video/")[:5])
+        # print(os.listdir(f"{path}/audio/")[:5])
+        # print(self.data_dir)
+
+        
+
         videos = set([file_path[:-4] for file_path in os.listdir(f"{path}/video/")])
         audios = set([file_path[:-4] for file_path in os.listdir(f"{path}/audio/")])
+
+
+        # print(list(videos)[:5])
+        # print(list(audios)[:5])
+
         samples = videos & audios
+
+        # print("samples: ", list(samples)[:5])
+
+        # import sys; sys.exit()
 
         self.prepare_dataset(samples)
 
@@ -579,7 +666,15 @@ class VideoFolderDataset(Dataset):
 
     def prepare_dataset(self, samples):
         # self.up_sample()
+
+        # print("============= self.df ==============")
+        # print(self.df.head())
+        # print("============= self.df ==============")
+
         ytids = set(self.df['ytid'].unique().astype('str').tolist())
+        
+        # print("ytids: ", list(ytids)[:5])
+
         for vid in list(samples):
             if vid[:11] in ytids:
                 self.video_files.append(os.path.join(f"{self.data_dir}/video/", vid + ".mp4"))
@@ -654,6 +749,10 @@ class VideoFolderDataset(Dataset):
         while True:
             try:
                 video, _, audio = self.process_video_wrapper(self.video_files[index])
+                # print("self.get_video_shape(): ", self.get_video_shape())
+                # print("self.get_audio_shape(): ", self.get_audio_shape())
+                # print("video[0].size(): ", video[0].size())
+                # print("audio.size(): ", audio.size())
                 assert video[0].size() == self.get_video_shape()
                 assert audio.size() == self.get_audio_shape()
                 self.valid_videos.add(index)
