@@ -29,7 +29,7 @@ extend_dataset: False
 # Caches the latents (Frames-Image -> VAE -> Latent) to a HDD or SDD.
 # The latents will be saved under your training folder, and loaded automatically for training.
 # This both saves memory and speeds up training and takes very little disk space.
-cache_latents: True
+cache_latents: False
 
 # If you have cached latents set to `True` and have a directory of cached latents,
 # you can skip the caching process and load previously saved ones.
@@ -44,10 +44,10 @@ train_text_encoder: False
 # It is simply used as a mechanism for saving memory by keeping layers frozen and training the residual.
 
 # Use LoRA for the UNET model.
-use_unet_lora: True
+use_unet_lora: False
 
 # Use LoRA for the Text Encoder.
-use_text_lora: True
+use_text_lora: False
 
 # The modules to use for LoRA. Different from 'trainable_modules'.
 unet_lora_modules:
@@ -196,7 +196,7 @@ trainable_text_modules:
 seed: 64
 
 # Whether or not we want to use mixed precision with accelerate
-mixed_precision: "fp16"
+mixed_precision: "no"
 
 # This seems to be incompatible at the moment.
 use_8bit_adam: False

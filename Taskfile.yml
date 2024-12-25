@@ -1,0 +1,6 @@
+version: '3'
+
+tasks:
+  train:
+    cmds:
+      - uv run train.py --config configs/v2/audioset_drum.yaml
