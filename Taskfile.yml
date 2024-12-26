@@ -7,7 +7,7 @@ tasks:
   install:
     cmds:
       - uv sync
-      # - sudo apt update
+      - sudo apt update
       # - sudo systemctl daemon-reload
       - sudo apt install ffmpeg -y
 
