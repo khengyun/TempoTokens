@@ -2,6 +2,8 @@
 #pretrained_model_path: "./models/model_scope_diffusers/" #https://huggingface.co/damo-vilab/text-to-video-ms-1.7b/tree/main
 pretrained_model_path: 'cerspense/zeroscope_v2_576w'
 
+dataset: https://drive.google.com/file/d/1Wo0jiKYtxXs1Tl_SJACBbxniDDKeTGc4/view?usp=sharing
+
 # The folder where your training outputs will be placed.
 output_dir: "./outputs"
 
@@ -99,7 +101,7 @@ train_data:
 
   # 'folder'
   # path: "path/to/dataset_folder"
-  path: "/mnt/d/datasets/AudioSet_Drums/AudioSet_Dataset/train"
+  path: "datasets/AudioSet_Dataset/train"
 
   dataset_name: 'audioset_drum'
 
@@ -160,16 +162,16 @@ extra_text_encoder_params: null
   #adam_weight_decay: 0.2
 
 # How many batches to train. Not to be confused with video frames.
-train_batch_size: 2
+train_batch_size: 4
 
 # Maximum number of train steps. Model is saved after training.
-max_train_steps: 20000
+max_train_steps: 10000
 
 # Saves a model every nth step.
-checkpointing_steps: 1500
+checkpointing_steps: 1000
 
 # How many steps to do for validation if sample_preview is enabled.
-validation_steps: 200
+validation_steps: 100
 
 # Which modules we want to unfreeze for the UNET. Advanced usage.
 trainable_modules:

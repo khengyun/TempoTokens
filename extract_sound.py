@@ -1,6 +1,7 @@
 import os
 import subprocess
 import torchaudio
+import argparse
 
 def extract_audio_with_torchaudio(input_folder, output_folder):
     """
@@ -35,9 +36,14 @@ def extract_audio_with_torchaudio(input_folder, output_folder):
             except Exception as e:
                 print(f"An error occurred with file {file_name}: {e}")
 
-# Example usage
 if __name__ == "__main__":
-    input_folder = "/mnt/d/datasets/AudioSet_Drums/AudioSet_Dataset/train/video"  # Folder chứa video
-    output_folder = "/mnt/d/datasets/AudioSet_Drums/AudioSet_Dataset/train/audio"  # Folder lưu file WAV
+    parser = argparse.ArgumentParser(description="Extract audio from MP4 videos and process with torchaudio.")
+    parser.add_argument("--input", required=True, help="Path to the input folder containing MP4 videos.")
+    parser.add_argument("--output", required=True, help="Path to the output folder for WAV audio files.")
+
+    args = parser.parse_args()
+
+    input_folder = args.input
+    output_folder = args.output
 
     extract_audio_with_torchaudio(input_folder, output_folder)
