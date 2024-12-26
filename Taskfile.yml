@@ -7,9 +7,13 @@ tasks:
   install:
     cmds:
       - uv sync
-      - sudo apt update
-      - sudo systemctl daemon-reload
+      # - sudo apt update
+      # - sudo systemctl daemon-reload
       - sudo apt install ffmpeg -y
+
+      # - git config --global http.postBuffer 524288000
+      # - git config --global http.maxRequestBuffer 500M
+
   setup:
     cmds:
       - uv run datadownloader.py && mv datasets/AudioSet_Dataset/test/mp4/* datasets/AudioSet_Dataset/train/mp4/
