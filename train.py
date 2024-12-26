@@ -45,6 +45,8 @@ from modules.temp_tokens.embedder import TempEmbedder
 from modules.text_encoder.modeling_clip_tempotokens import CLIPTextModel, CLIPEncoder
 from utils.dataset import VideoJsonDataset, SingleVideoDataset, \
     ImageDataset, VideoFolderDataset, CachedDataset
+from utils.dataset import preprocess_audio
+    
 from einops import rearrange
 
 from utils.lora import (
@@ -83,7 +85,8 @@ def combine_video_audio(video_path, audio_path):
 def cut_wav_file(input_path, output_path, start_time, end_time):
     # Load the WAV file
     audio, sr = torchaudio.load(input_path)
-
+    audio = preprocess_audio(audio, sr)
+    
     # Calculate the start and end samples
     start_sample = int(start_time * sr)
     end_sample = int(end_time * sr)
