@@ -1105,8 +1105,8 @@ def main(
                     if global_step == 1: print("Performing validation prompt.")
                     if accelerator.is_main_process:
 
-                        audio_paths = ['EYWZz8l8yKg_110000_120000', '31O2j4aAgYU_30000_40000', '3AzacBprTzU_60000_70000', 'DKSrNxPQrbY_90000_100000']
-                        audio_path = f'validation_set/{audio_paths[validation_idx % len(audio_paths)]}.wav'
+                        audio_paths = ['1', '2', '3', '4', '5']
+                        audio_path = f'datasets/AudioSet_Dataset/valid/{audio_paths[validation_idx % len(audio_paths)]}.wav'
 
                         start_audio = validation_idx % 9
                         end_audio = start_audio + 2
