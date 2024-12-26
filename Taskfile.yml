@@ -20,5 +20,4 @@ tasks:
       - mv datasets/AudioSet_Dataset/train/mp4 datasets/AudioSet_Dataset/train/video
       - uv run extract_sound.py --input datasets/AudioSet_Dataset/train/video --output datasets/AudioSet_Dataset/train/audio
       - chmod +x download_beat.sh && ./download_beat.sh -u "https://huggingface.co/spaces/fffiloni/SALMONN-7B-gradio/resolve/677c0125de736ab92751385e1e8664cd03c2ce0d/beats/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt" -o "models/BEATs/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
-
-      
+      - mkdir datasets/AudioSet_Dataset/valid && mv datasets/AudioSet_Dataset/train/video/1.mp4 datasets/AudioSet_Dataset/train/video/2.mp4 datasets/AudioSet_Dataset/train/video/3.mp4 datasets/AudioSet_Dataset/train/video/4.mp4 datasets/AudioSet_Dataset/train/video/5.mp4 datasets/AudioSet_Dataset/valid/
