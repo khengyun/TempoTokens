@@ -4,3 +4,17 @@ tasks:
   train:
     cmds:
       - uv run train.py --config configs/v2/audioset_drum.yaml
+  install:
+    cmds:
+      - uv sync
+      - sudo apt update
+      - sudo systemctl daemon-reload
+      - sudo apt install ffmpeg -y
+  setup:
+    cmds:
+      - uv run datadownloader.py && mv datasets/AudioSet_Dataset/test/mp4/* datasets/AudioSet_Dataset/train/mp4/
+      - mv datasets/AudioSet_Dataset/train/mp4 datasets/AudioSet_Dataset/train/video
+      - uv run extract_sound.py --input datasets/AudioSet_Dataset/train/video --output datasets/AudioSet_Dataset/train/audio
+      - chmod +x download_beat.sh && ./download_beat.sh -u "https://huggingface.co/spaces/fffiloni/SALMONN-7B-gradio/resolve/677c0125de736ab92751385e1e8664cd03c2ce0d/beats/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt" -o "models/BEATs/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt"
+
+      

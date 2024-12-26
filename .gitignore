@@ -3,7 +3,7 @@
 /models/beats/
 /scripts/
 /synthetic_testset
-/datasets
+/datasets/*_Dataset
 /__pycache__
 /models/__pycache__
 /models
