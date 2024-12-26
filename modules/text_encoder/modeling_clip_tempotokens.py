@@ -230,28 +230,41 @@ class CLIPTextEmbeddings(nn.Module):
             inputs_embeds = self.token_embedding(input_ids)
 
             indices = torch.where(input_ids == 49408)
-            if not temp_token is None and indices[0].shape[0]:
-                inputs_embeds[indices] = temp_token.view(temp_token.shape[0]*temp_token.shape[1], 1024)
+            if temp_token is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = temp_token.to(inputs_embeds.dtype).view(
+                    temp_token.shape[0] * temp_token.shape[1], 1024
+                )
 
             indices = torch.where(input_ids == 49409)
-            if not local_windows[0] is None and indices[0].shape[0]:
-                inputs_embeds[indices] = local_windows[0].view(local_windows[0].shape[0]*local_windows[0].shape[1], 1024)
+            if local_windows[0] is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = local_windows[0].to(inputs_embeds.dtype).view(
+                    local_windows[0].shape[0] * local_windows[0].shape[1], 1024
+                )
 
             indices = torch.where(input_ids == 49410)
-            if not local_windows[1] is None and indices[0].shape[0]:
-                inputs_embeds[indices] = local_windows[1].view(local_windows[1].shape[0]*local_windows[0].shape[1], 1024)
+            if local_windows[1] is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = local_windows[1].to(inputs_embeds.dtype).view(
+                    local_windows[1].shape[0] * local_windows[1].shape[1], 1024
+                )
 
             indices = torch.where(input_ids == 49411)
-            if not local_windows[2] is None and indices[0].shape[0]:
-                inputs_embeds[indices] = local_windows[2].view(local_windows[2].shape[0]*local_windows[0].shape[1], 1024)
+            if local_windows[2] is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = local_windows[2].to(inputs_embeds.dtype).view(
+                    local_windows[2].shape[0] * local_windows[2].shape[1], 1024
+                )
 
             indices = torch.where(input_ids == 49412)
-            if not local_windows[3] is None and indices[0].shape[0]:
-                inputs_embeds[indices] = local_windows[3].view(local_windows[3].shape[0]*local_windows[0].shape[1], 1024)
+            if local_windows[3] is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = local_windows[3].to(inputs_embeds.dtype).view(
+                    local_windows[3].shape[0] * local_windows[3].shape[1], 1024
+                )
 
             indices = torch.where(input_ids == 49413)
-            if not audio_token is None and indices[0].shape[0]:
-                inputs_embeds[indices] = audio_token.view(audio_token.shape[0]*audio_token.shape[1], 1024)
+            if audio_token is not None and indices[0].shape[0]:
+                inputs_embeds[indices] = audio_token.to(inputs_embeds.dtype).view(
+                    audio_token.shape[0] * audio_token.shape[1], 1024
+                )
+
 
         position_embeddings = self.position_embedding(position_ids)
         embeddings = inputs_embeds + position_embeddings
